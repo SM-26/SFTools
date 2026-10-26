@@ -8,7 +8,8 @@
 		"watch": "ng build --watch --configuration development",
 		"test": "ng test",
 		"desktop:dev": "tauri dev --config desktop/tauri.dev.conf.json",
-		"desktop:build": "tauri build"
+		"desktop:build": "tauri build",
+		"headless:build": "esbuild headless/solve.ts --bundle --platform=node --format=esm --outfile=headless/dist/solve.mjs --tsconfig=tsconfig.json --external:highs --log-level=warning \"--banner:js=import {createRequire as __cr} from 'module'; const require = __cr(import.meta.url);\""
 	},
 	"private": true,
 	"license": "MIT",
