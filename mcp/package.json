@@ -1,0 +1,16 @@
+{
+	"name": "sftools-mcp",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "esbuild server.ts --bundle --platform=node --format=esm --outfile=dist/server.mjs --tsconfig=../tsconfig.json --external:highs --log-level=warning \"--banner:js=import {createRequire as __cr} from 'module'; const require = __cr(import.meta.url);\"",
+		"check": "tsc -p tsconfig.json"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.32.2",
+		"zod": "^4.6.7"
+	},
+	"devDependencies": {
+		"@types/node": "^22.20.5"
+	}
+}

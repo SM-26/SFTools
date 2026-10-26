@@ -50,9 +50,23 @@ export function loadData(versionFile: string): Data
 	return new Data(file.data, file.metadata, file.worldLimits ?? null);
 }
 
+/** Mod data replaces whole entries by className, the way the API applies a mod to a version. */
+export function applyMod(data: Record<string, any>, mod: Record<string, any>): Record<string, any>
+{
+	const merged = {...data};
+	for (const [collection, entries] of Object.entries(mod)) {
+		merged[collection] = Array.isArray(entries)
+			? [...new Set([...(data[collection] ?? []), ...entries])]
+			: {...data[collection], ...entries};
+	}
+	return merged;
+}
+
+let highsInstance: Promise<Highs> | null = null;
+
 export async function solve(plan: Plan, data: Data): Promise<HeadlessResult>
 {
-	const highs = await loadHighs();
+	const highs = await (highsInstance ??= loadHighs());
 	let last: {lp: string; solution: HighsSolution} | null = null;
 	const solver = {
 		solve: (lp: string, options: {workerOptions?: {mipRelGap?: number}}) => {
