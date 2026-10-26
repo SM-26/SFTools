@@ -50,11 +50,11 @@ export function loadData(versionFile: string): Data
 	return new Data(file.data, file.metadata, file.worldLimits ?? null);
 }
 
-/** Mod data replaces whole entries by className, the way the API applies a mod to a version. */
+/** Mod data replaces whole entries by className, the way the API applies a mod to a version. Takes the mod editor's {data, metadata} file or bare data. */
 export function applyMod(data: Record<string, any>, mod: Record<string, any>): Record<string, any>
 {
 	const merged = {...data};
-	for (const [collection, entries] of Object.entries(mod)) {
+	for (const [collection, entries] of Object.entries<any>(mod['data'] ?? mod)) {
 		merged[collection] = Array.isArray(entries)
 			? [...new Set([...(data[collection] ?? []), ...entries])]
 			: {...data[collection], ...entries};

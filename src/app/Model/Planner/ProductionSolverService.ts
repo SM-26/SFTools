@@ -404,8 +404,13 @@ export class ProductionSolverService
 	private allowedRecipes(plan: Plan, data: Data): Recipe[]
 	{
 		const enabled = this.enabledRecipes.resolve(plan.settings, data);
-		return data.getRecipesForMachines().filter(recipe => enabled.has(recipe.className)
-			&& !this.enabledRecipes.isDisabledByMachine(recipe, plan.settings));
+		const disabled = new Set(plan.settings.disabledMachines ?? []);
+		return data.getRecipesForMachines()
+			.filter(recipe => enabled.has(recipe.className) && !this.enabledRecipes.isDisabledByMachine(recipe, plan.settings))
+			// A recipe made in several machines (mods add tiers) keeps only the enabled ones - every LP column comes from producedIn.
+			.map(recipe => recipe.producedIn.some(machine => disabled.has(machine?.className))
+				? {...recipe, producedIn: recipe.producedIn.filter(machine => !disabled.has(machine?.className))}
+				: recipe);
 	}
 
 	private inputSources(plan: Plan, data: Data): InputSource[]
